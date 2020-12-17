@@ -16,7 +16,11 @@ class RestrictedCubicSpline(BaseEstimator, TransformerMixin):
         self.k = k
     
     def fit(self, X, y=None):
+        
+        if self.k<0:
+            return self
                
+        # From Regression Modelling strategies
         knot_locations = {
             3: [0.1, 0.5, 0.9],
             4: [0.05, 0.365, 0.65, 0.95],
@@ -36,7 +40,12 @@ class RestrictedCubicSpline(BaseEstimator, TransformerMixin):
     
     def transform(self, X, y=None):
         
-        self.basis_expansion = np.zeros((X.shape[0], self.k-1))
+        n_observations, n_features = self._validate_data(X, y).shape
+        
+        if self.k<0:
+            return X
+                
+        self.basis_expansion = np.zeros((n_observations, self.k-1))
         
         self.basis_expansion[:,0, np.newaxis] = X
         
